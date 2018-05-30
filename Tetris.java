@@ -1,7 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-
+import java.awt.image.*;
 
 public class Tetris extends Panel
 {
@@ -20,6 +20,8 @@ public class Tetris extends Panel
 	int s; // side length of square in board
 	Color[] colors = new Color[]{Color.BLACK, Color.BLUE, Color.WHITE, Color.RED, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.MAGENTA, Color.GRAY}; // colors for the board
 	Pieces activePiece;
+	BufferedImage osi; // off screen image
+	Graphics osg; // off screen graphics
 
 	TimerTask Move = new TimerTask() {
 		public void run() {
@@ -49,21 +51,30 @@ public class Tetris extends Panel
 
 	public void paint(Graphics g)
 	{
+		dim = getSize();
+		osi = new BufferedImage(dim.width, dim.height, BufferedImage.TYPE_INT_RGB);
+		osg = osi.getGraphics();
+		update(g);
+	}
+
+	public void update(Graphics g)
+	{
 		System.out.println("Painting");
-		int width = getSize().width;
-		int height = getSize().height;
+		int width = dim.width;
+		int height = dim.height;
 		s = Math.min(height/rows, width/cols);
 		for (int i = 0; i < rows; i++)
 		{
 			for (int j = 0; j < cols; j++)
 			{
-				g.setColor(colors[board[i][j]]);
-				g.fillRect(j*s, i*s, s, s);
-				g.setColor(Color.GRAY);
-				g.drawRect(j*s, i*s, s, s);
+				osg.setColor(colors[board[i][j]]);
+				osg.fillRect(j*s, i*s, s, s);
+				osg.setColor(Color.GRAY);
+				osg.drawRect(j*s, i*s, s, s);
 			}
 		}
-		activePiece.display(g, s);
+		activePiece.display(osg, s);
+		g.drawImage(osi, 0, 0, this);
 	}
 
 	public void newPiece()
