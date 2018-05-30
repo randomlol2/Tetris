@@ -15,15 +15,20 @@ public class Pieces
 	public int[][] grid = new int[4][4];
 	int row;
 	int col;
+	int type;
 	Color color;
 
-	public Pieces(int type)
+	public Pieces(int _type, Color c)
 	{
+		type = _type;
 		if (type < 1 || type > 7)
+		{
 			print("ERROR: Invalid piece type");
-		row = 4;
-		column = 0;
-		color = colors[type - 1];
+			return;
+		}
+		row = 0;
+		col = 4;
+		color = c;
 		setGrid(type);
 	}
 
@@ -79,7 +84,7 @@ public class Pieces
 			{
 				if (grid[i][j] == 1)
 				{
-					g.fillRect((row + i)*s, (column + j)*s, s, s);
+					g.fillRect((col + j)*s, (row + i)*s, s, s);
 				}
 			}
 		}
@@ -99,16 +104,19 @@ public class Pieces
 			}
 			if (j == -1) // piece is not in the i-th column
 				continue;
-			else if (board[row+j+1][col+i] != 0) // the space below it is occupied, so it cannot move
+			else if (board[row+j+1][col+i] != 0) { // the space below it is occupied, so it cannot move
 				canMove = false;
+				print("Blocked at ("+(row+j+1)+", "+(col+i)+")");
+			}
 		}
-		if (canmove)
-			column--;
+		if (canMove)
+			row++;
 		else
 		{
-			for (int i = 0 i<4; i++)
+			print("Couldn't move!");
+			for (int i = 0; i<4; i++)
 			{
-				for (int j = 0; i<4; j++)
+				for (int j = 0; j<4; j++)
 				{
 					if (grid[i][j] == 1)
 						board[row+i][col+j] = type;

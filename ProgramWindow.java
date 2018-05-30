@@ -8,9 +8,9 @@ public class ProgramWindow extends Frame
 	{
 		setTitle("Tetris");
 		setSize(800, 600); // set dimensions of the window
-		setLocation (100, 100); //set the position of the top � left corner
+		setLocation (100, 100); //set the position of the top-left corner
 		setResizable(true); // the user will be able to change the size
-		add(panel); // �attach� the panel to the frame
+		add(panel); // attach the panel to the frame
 		setVisible(true); // show the window on the monitor
 	}
 }
