@@ -5,15 +5,12 @@ import java.util.Random;
 
 public class Tetris extends Panel
 {
-
-	private Dimension dim = null;
-	Color[] colours = new Color[]{Color.BLUE, Color.WHITE, Color.RED, Color.GREEN, Color.YELLOW, Color.GRAY, Color.MAGENTA};
-	//int rows =
-	Color[][] board;
+	Dimension dim = null;
+	int[][] board;
 	int rows = 24; // number of rows in board
 	int cols = 12; // number of columns in board
 	int s; // side length of square in board
-
+	Color[] colors = new Color[]{Color.GRAY, Color.BLUE, Color.WHITE, Color.RED, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.MAGENTA, Color.BLACK}; // colors for the board
 
 	public Tetris()
 	{
@@ -23,9 +20,9 @@ public class Tetris extends Panel
 			for (int j = 0; j < cols; j++)
 			{
 				if (j == 0 || i == rows - 1 || j == cols - 1)
-					board[i][j] = Color.GRAY;
+					board[i][j] = 0; // empty (grey)
 				else
-					board[i][j] = Color.BLACK;
+					board[i][j] = 8; // border (black)
 			}
 		}
 	}
@@ -53,8 +50,6 @@ public class Tetris extends Panel
 			}
 		}
 	}
-
-	Pieces testPiece = new Pieces(0);
 
 	public void paintPieces(Graphics g)
 	{
