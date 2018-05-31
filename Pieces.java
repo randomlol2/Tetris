@@ -12,13 +12,14 @@ public class Pieces
 		System.out.println(s);
 	}
 
-	public int[][] grid = new int[4][4];
+	int[][] grid = new int[4][4];
+	int[][] board;
 	int row;
 	int col;
 	int type;
 	Color color;
 
-	public Pieces(int _type, Color c)
+	public Pieces(int _type, Color c, int[][] _board)
 	{
 		type = _type;
 		if (type < 1 || type > 7)
@@ -29,6 +30,7 @@ public class Pieces
 		row = 0;
 		col = 4;
 		color = c;
+		board = _board;
 		setGrid(type);
 	}
 
@@ -36,9 +38,9 @@ public class Pieces
 	{
 		switch (type)
 		{
-			case 1: grid = new int[][]{ {0, 1, 0, 0},
-										{1, 1, 1, 0},
-										{0, 0, 0, 0},
+			case 1: grid = new int[][]{ {0, 0, 0, 0},
+										{0, 0, 1, 0},
+										{0, 1, 1, 1},
 										{0, 0, 0, 0}};
 										break;
 			case 2: grid = new int[][]{ {0, 0, 0, 0},
@@ -56,10 +58,10 @@ public class Pieces
 										{0, 1, 1, 0},
 										{0, 0, 0, 0}};
 										break;
-			case 5: grid = new int[][]{ {0, 1, 1, 0},
+			case 5: grid = new int[][]{ {0, 0, 0, 0},
+										{0, 1, 1, 0},
 										{0, 1, 0, 0},
-										{0, 1, 0, 0},
-										{0, 0, 0, 0}};
+										{0, 1, 0, 0}};
 										break;
 			case 6: grid = new int[][]{ {0, 0, 1, 0},
 										{0, 1, 1, 0},
@@ -91,7 +93,7 @@ public class Pieces
 	}
 
 	// returns true if the piece moved, and false if it didn't move
-	public Boolean shiftDown(int[][] board) {
+	public Boolean shiftDown() {
 		Boolean canMove = true;
 		for (int i = 0; i < 4; i++)
 		{
@@ -124,7 +126,7 @@ public class Pieces
 		return canMove;
 	}
 
-	public void shiftLeft(int[][] board)
+	public void shiftLeft()
 	{
 		Boolean canMove = true;
 		for (int i = 0; i < 4; i++)
@@ -145,7 +147,7 @@ public class Pieces
 			col--;
 	}
 
-	public void shiftRight(int[][] board)
+	public void shiftRight()
 	{
 		Boolean canMove = true;
 		for (int i = 0; i < 4; i++)
@@ -166,22 +168,65 @@ public class Pieces
 			col++;
 	}
 
-	public void fall(int[][] board)
+	public void fall()
 	{
-		while(shiftDown(board)); // fall down as much as possible
+		while(shiftDown()); // fall down as much as possible
 	}
 
-	public void move(int dir, int[][] board) // Left: dir = 0, Right: dir = 1, Down: dir = 2
+	public void move(int dir) // Left: dir = 0, Right: dir = 1, Down: dir = 2
 	{
 		switch (dir)
 		{
-			case 0:	shiftLeft(board);
+			case 0:	shiftLeft();
 					break;
-			case 1:	shiftRight(board);
+			case 1:	shiftRight();
 					break;
-			case 2: fall(board);
+			case 2: fall();
 					break;
 			default: print("ERROR: Invalid direction to move in");
+		}
+	}
+
+	public void rotate(int dir)
+	{
+		int[][] newGrid = new int[4][4];
+		if (dir == 0)
+		{
+			for (int i = 0; i<4; i++)
+			{
+				for (int j = 0; j<4; j++)
+				{
+					if (grid[i][j] == 1)
+						newGrid[3-j][i] = 1;
+				}
+			}
+		}
+		else
+		{
+			for (int i = 0; i<4; i++)
+			{
+				for (int j = 0; j<4; j++)
+				{
+					if (grid[i][j] == 1)
+						newGrid[j][3-i] = 1;
+				}
+			}
+		}
+		for (int i = 0; i<4; i++)
+		{
+			for (int j = 0; j<4; j++)
+			{
+				if (newGrid[i][j]*board[row+i][col+j] > 0)
+					return; // cannot rotate, because the spot is occupied
+
+			}
+		}
+		for (int i = 0; i<4; i++)
+		{
+			for (int j = 0; j<4; j++)
+			{
+				grid[i][j] = newGrid[i][j];
+			}
 		}
 	}
 }

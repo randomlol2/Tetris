@@ -26,7 +26,7 @@ public class Tetris extends Panel implements KeyListener
 
 	TimerTask Fall = new TimerTask() {
 		public void run() {
-			if(!activePiece.shiftDown(board))
+			if(!activePiece.shiftDown())
 			{
 				newPiece();
 			}
@@ -83,9 +83,8 @@ public class Tetris extends Panel implements KeyListener
 
 	public void newPiece()
 	{
-		print("New Piece");
 		int type = (int)(7*Math.random())+1; // random int between 1 and 7
-		activePiece = new Pieces(type, colors[type]);
+		activePiece = new Pieces(type, colors[type], board);
 	}
 
 	public void deleteRows()
@@ -120,15 +119,19 @@ public class Tetris extends Panel implements KeyListener
 	{
 		switch (e.getKeyCode())
 		{
-			case KeyEvent.VK_LEFT: 	activePiece.move(0, board);
+			case KeyEvent.VK_LEFT: 	activePiece.move(0);
 									break;
-			case KeyEvent.VK_RIGHT: activePiece.move(1, board);
+			case KeyEvent.VK_RIGHT: activePiece.move(1);
 									break;
-			case KeyEvent.VK_DOWN: 	if(!activePiece.shiftDown(board))
+			case KeyEvent.VK_DOWN: 	if(!activePiece.shiftDown())
 										newPiece();
 									break;
-			case KeyEvent.VK_SPACE: activePiece.move(2, board);
+			case KeyEvent.VK_SPACE: activePiece.move(2);
 									newPiece();
+									break;
+			case KeyEvent.VK_Z: 	activePiece.rotate(0); // rotate clockwise
+									break;
+			case KeyEvent.VK_X: 	activePiece.rotate(1);
 									break;
 		}
 		repaint();
