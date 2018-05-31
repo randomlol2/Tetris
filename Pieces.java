@@ -39,9 +39,9 @@ public class Pieces
 		switch (type)
 		{
 			case 1: grid = new int[][]{ {0, 0, 0, 0},
-										{0, 0, 1, 0},
-										{0, 1, 1, 1},
-										{0, 0, 0, 0}};
+										{0, 1, 0, 0},
+										{0, 1, 1, 0},
+										{0, 1, 0, 0}};
 										break;
 			case 2: grid = new int[][]{ {0, 0, 0, 0},
 										{0, 1, 1, 0},
@@ -53,25 +53,25 @@ public class Pieces
 										{0, 1, 0, 0},
 										{0, 1, 0, 0}};
 										break;
-			case 4: grid = new int[][]{ {0, 1, 0, 0},
-										{0, 1, 0, 0},
+			case 4: grid = new int[][]{ {0, 0, 0, 0},
 										{0, 1, 1, 0},
-										{0, 0, 0, 0}};
+										{0, 0, 1, 0},
+										{0, 0, 1, 0}};
 										break;
 			case 5: grid = new int[][]{ {0, 0, 0, 0},
 										{0, 1, 1, 0},
 										{0, 1, 0, 0},
 										{0, 1, 0, 0}};
 										break;
-			case 6: grid = new int[][]{ {0, 0, 1, 0},
-										{0, 1, 1, 0},
-										{0, 1, 0, 0},
-										{0, 0, 0, 0}};
-										break;
-			case 7: grid = new int[][]{ {0, 1, 0, 0},
-										{0, 1, 1, 0},
+			case 6: grid = new int[][]{ {0, 0, 0, 0},
 										{0, 0, 1, 0},
-										{0, 0, 0, 0}};
+										{0, 1, 1, 0},
+										{0, 1, 0, 0}};
+										break;
+			case 7: grid = new int[][]{ {0, 0, 0, 0},
+										{0, 1, 0, 0},
+										{0, 1, 1, 0},
+										{0, 0, 1, 0}};
 										break;
 			default: print("ERROR: Invalid piece type");
 		}
@@ -84,7 +84,7 @@ public class Pieces
 		{
 			for(int j = 0; j<4; j++)
 			{
-				if (grid[i][j] == 1)
+				if (grid[i][j] == 1 && row+i >= 4)
 				{
 					g.fillRect((col + j)*s, (row + i)*s, s, s);
 				}

@@ -23,13 +23,12 @@ public class Tetris extends Panel implements KeyListener
 	BufferedImage osi; // off screen image
 	Graphics osg; // off screen graphics
 	double moveTime = 0.8; // time between each block movement, in seconds
+	Boolean playing = true;
 
 	TimerTask Fall = new TimerTask() {
 		public void run() {
 			if(!activePiece.shiftDown())
-			{
 				newPiece();
-			}
 			repaint();
 		}
 	};
@@ -72,6 +71,8 @@ public class Tetris extends Panel implements KeyListener
 			for (int j = 0; j < cols; j++)
 			{
 				osg.setColor(colors[board[i][j]]);
+				if (i < 4)
+					osg.setColor(Color.GRAY); // don't show the first 4 rowss
 				osg.fillRect(j*s, i*s, s, s);
 				osg.setColor(Color.GRAY);
 				osg.drawRect(j*s, i*s, s, s);
@@ -81,8 +82,26 @@ public class Tetris extends Panel implements KeyListener
 		g.drawImage(osi, 0, 0, this);
 	}
 
+	public void checkDeath()
+	{
+		for (int i = 0; i<4; i++)
+		{
+			for (int j = 1; j < cols-1; j++)
+			{
+				if (board[i][j] != 0)
+				{
+					print("You Lost");
+					playing = false;
+				}
+			}
+		}
+	}
+
 	public void newPiece()
 	{
+		checkDeath();
+		if (!playing)
+			return;
 		int type = (int)(7*Math.random())+1; // random int between 1 and 7
 		activePiece = new Pieces(type, colors[type], board);
 	}
