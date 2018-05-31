@@ -136,7 +136,7 @@ public class Pieces
 				if (grid[i][j] == 1)
 					break;
 			}
-			if (j == 5) // piece is not in the i-th column
+			if (j == 4) // piece is not in the i-th column
 				continue;
 			else if (board[row+i][col+j-1] != 0) // the space below it is occupied, so it cannot move
 				canMove = false;
@@ -175,14 +175,11 @@ public class Pieces
 	{
 		switch (dir)
 		{
-			case 0: print("Left");
-					shiftLeft(board);
+			case 0:	shiftLeft(board);
 					break;
-			case 1: print("Right");
-					shiftRight(board);
+			case 1:	shiftRight(board);
 					break;
-			case 2: print("Down");
-					fall(board);
+			case 2: fall(board);
 					break;
 			default: print("ERROR: Invalid direction to move in");
 		}

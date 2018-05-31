@@ -27,7 +27,9 @@ public class Tetris extends Panel implements KeyListener
 	TimerTask Fall = new TimerTask() {
 		public void run() {
 			if(!activePiece.shiftDown(board))
+			{
 				newPiece();
+			}
 			repaint();
 		}
 	};
@@ -61,7 +63,7 @@ public class Tetris extends Panel implements KeyListener
 
 	public void update(Graphics g)
 	{
-		System.out.println("Painting");
+		deleteRows();
 		int width = dim.width;
 		int height = dim.height;
 		s = Math.min(height/rows, width/cols);
@@ -86,6 +88,33 @@ public class Tetris extends Panel implements KeyListener
 		activePiece = new Pieces(type, colors[type]);
 	}
 
+	public void deleteRows()
+	{
+		for (int i = 0; i < rows - 1; i++)
+			while (deleteRow(i));
+	}
+
+	public Boolean deleteRow(int row)
+	{
+		Boolean full = true;
+		for (int j = 1; j < cols-1; j++)
+		{
+			if (board[row][j] == 0)
+				full = false;
+		}
+		if (full)
+		{	// shift everything abodfve row down by one
+			for (int i = row; i > 0; i--)
+			{
+				for (int j = 1; j < cols-1; j++)
+					board[i][j] = board[i-1][j];
+			}
+			for (int j = 1; j < cols-1; j++)
+				board[0][j] = 0;
+		}
+		return full;
+	}
+
 	// KeyListener interface methods
 	public void keyPressed(KeyEvent e)
 	{
@@ -95,7 +124,10 @@ public class Tetris extends Panel implements KeyListener
 									break;
 			case KeyEvent.VK_RIGHT: activePiece.move(1, board);
 									break;
-			case KeyEvent.VK_DOWN: 	activePiece.move(2, board);
+			case KeyEvent.VK_DOWN: 	if(!activePiece.shiftDown(board))
+										newPiece();
+									break;
+			case KeyEvent.VK_SPACE: activePiece.move(2, board);
 									newPiece();
 									break;
 		}
