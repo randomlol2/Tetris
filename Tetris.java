@@ -23,10 +23,14 @@ public class Tetris extends Panel implements KeyListener
 	BufferedImage osi; // off screen image
 	Graphics osg; // off screen graphics
 	double moveTime = 0.8; // time between each block movement, in seconds
-	Boolean playing = true;
+	Boolean died = false;
+	int score = 0;
+	Timer timer = new Timer();
 
 	TimerTask Fall = new TimerTask() {
 		public void run() {
+			if (died)
+				return;
 			if(!activePiece.shiftDown())
 				newPiece();
 			repaint();
@@ -36,6 +40,11 @@ public class Tetris extends Panel implements KeyListener
 	public Tetris()
 	{
 		addKeyListener(this);
+		startGame();
+	}
+
+	public void startGame()
+	{
 		board = new int[rows][cols];
 		for(int i = 0; i < rows; i++)
 		{
@@ -48,8 +57,9 @@ public class Tetris extends Panel implements KeyListener
 			}
 		}
 		newPiece();
-		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(Fall, 0, (long)(moveTime*1000));
+		died = false;
+		score = 0;
 	}
 
 	public void paint(Graphics g)
@@ -79,6 +89,14 @@ public class Tetris extends Panel implements KeyListener
 			}
 		}
 		activePiece.display(osg, s);
+		osg.setColor(Color.WHITE);
+		if (died)
+		{
+			osg.drawString("Game Over! Youre score is " + score, 50, 50);
+			osg.drawString("Press 'r' to restart.", 50, 70);
+		}
+		else
+			osg.drawString("Score: " + score, 50, 50);
 		g.drawImage(osi, 0, 0, this);
 	}
 
@@ -91,7 +109,10 @@ public class Tetris extends Panel implements KeyListener
 				if (board[i][j] != 0)
 				{
 					print("You Lost");
-					playing = false;
+					died = true;
+					timer.cancel();
+					timer = new Timer();
+					return;
 				}
 			}
 		}
@@ -100,7 +121,7 @@ public class Tetris extends Panel implements KeyListener
 	public void newPiece()
 	{
 		checkDeath();
-		if (!playing)
+		if (died)
 			return;
 		int type = (int)(7*Math.random())+1; // random int between 1 and 7
 		activePiece = new Pieces(type, colors[type], board);
@@ -108,8 +129,20 @@ public class Tetris extends Panel implements KeyListener
 
 	public void deleteRows()
 	{
+		int count = 0; // number of lines deleted
 		for (int i = 0; i < rows - 1; i++)
-			while (deleteRow(i));
+		{
+			while (deleteRow(i))
+				count++;
+		}
+		if (count > 0)
+		{
+			int increment = 100;
+			for (int i = 1; i<count; i++)
+				increment *= 2;
+			score += increment;
+		}
+		// 100 points for clearing a row, 200 for 2 rows, 400 for 3 rows, 800 for 4 rows
 	}
 
 	public Boolean deleteRow(int row)
@@ -151,6 +184,8 @@ public class Tetris extends Panel implements KeyListener
 			case KeyEvent.VK_Z: 	activePiece.rotate(0); // rotate clockwise
 									break;
 			case KeyEvent.VK_X: 	activePiece.rotate(1);
+									break;
+			case KeyEvent.VK_R:		startGame();
 									break;
 		}
 		repaint();
