@@ -91,7 +91,7 @@ public class Pieces
 	}
 
 	// returns true if the piece moved, and false if it didn't move
-	public Boolean move(int[][] board) {
+	public Boolean shiftDown(int[][] board) {
 		Boolean canMove = true;
 		for (int i = 0; i < 4; i++)
 		{
@@ -104,10 +104,8 @@ public class Pieces
 			}
 			if (j == -1) // piece is not in the i-th column
 				continue;
-			else if (board[row+j+1][col+i] != 0) { // the space below it is occupied, so it cannot move
+			else if (board[row+j+1][col+i] != 0) // the space below it is occupied, so it cannot move
 				canMove = false;
-				print("Blocked at ("+(row+j+1)+", "+(col+i)+")");
-			}
 		}
 		if (canMove)
 			row++;
@@ -124,5 +122,69 @@ public class Pieces
 			}
 		}
 		return canMove;
+	}
+
+	public void shiftLeft(int[][] board)
+	{
+		Boolean canMove = true;
+		for (int i = 0; i < 4; i++)
+		{
+			// find the square in the i-th row that is directly left of the piece
+			int j = 0;
+			for (; j < 4; j++)
+			{
+				if (grid[i][j] == 1)
+					break;
+			}
+			if (j == 5) // piece is not in the i-th column
+				continue;
+			else if (board[row+i][col+j-1] != 0) // the space below it is occupied, so it cannot move
+				canMove = false;
+		}
+		if (canMove)
+			col--;
+	}
+
+	public void shiftRight(int[][] board)
+	{
+		Boolean canMove = true;
+		for (int i = 0; i < 4; i++)
+		{
+			// find the square in the i-th row that is directly left of the piece
+			int j = 3;
+			for (; j >= 0; j--)
+			{
+				if (grid[i][j] == 1)
+					break;
+			}
+			if (j == -1) // piece is not in the i-th column
+				continue;
+			else if (board[row+i][col+j+1] != 0) // the space below it is occupied, so it cannot move
+				canMove = false;
+		}
+		if (canMove)
+			col++;
+	}
+
+	public void fall(int[][] board)
+	{
+		while(shiftDown(board)); // fall down as much as possible
+	}
+
+	public void move(int dir, int[][] board) // Left: dir = 0, Right: dir = 1, Down: dir = 2
+	{
+		switch (dir)
+		{
+			case 0: print("Left");
+					shiftLeft(board);
+					break;
+			case 1: print("Right");
+					shiftRight(board);
+					break;
+			case 2: print("Down");
+					fall(board);
+					break;
+			default: print("ERROR: Invalid direction to move in");
+		}
 	}
 }

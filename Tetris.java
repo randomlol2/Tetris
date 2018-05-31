@@ -3,7 +3,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.awt.image.*;
 
-public class Tetris extends Panel
+public class Tetris extends Panel implements KeyListener
 {
 	// for convenience
 	public void print(String s){
@@ -22,10 +22,11 @@ public class Tetris extends Panel
 	Pieces activePiece;
 	BufferedImage osi; // off screen image
 	Graphics osg; // off screen graphics
+	double moveTime = 0.8; // time between each block movement, in seconds
 
-	TimerTask Move = new TimerTask() {
+	TimerTask Fall = new TimerTask() {
 		public void run() {
-			if(!activePiece.move(board))
+			if(!activePiece.shiftDown(board))
 				newPiece();
 			repaint();
 		}
@@ -33,6 +34,7 @@ public class Tetris extends Panel
 
 	public Tetris()
 	{
+		addKeyListener(this);
 		board = new int[rows][cols];
 		for(int i = 0; i < rows; i++)
 		{
@@ -46,7 +48,7 @@ public class Tetris extends Panel
 		}
 		newPiece();
 		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(Move, 100, 1000);
+		timer.scheduleAtFixedRate(Fall, 0, (long)(moveTime*1000));
 	}
 
 	public void paint(Graphics g)
@@ -83,4 +85,23 @@ public class Tetris extends Panel
 		int type = (int)(7*Math.random())+1; // random int between 1 and 7
 		activePiece = new Pieces(type, colors[type]);
 	}
+
+	// KeyListener interface methods
+	public void keyPressed(KeyEvent e)
+	{
+		switch (e.getKeyCode())
+		{
+			case KeyEvent.VK_LEFT: 	activePiece.move(0, board);
+									break;
+			case KeyEvent.VK_RIGHT: activePiece.move(1, board);
+									break;
+			case KeyEvent.VK_DOWN: 	activePiece.move(2, board);
+									newPiece();
+									break;
+		}
+		repaint();
+	}
+
+	public void keyTyped(KeyEvent e){}
+	public void keyReleased(KeyEvent e){}
 }
