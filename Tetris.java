@@ -57,7 +57,7 @@ public class Tetris extends Panel implements KeyListener
 	{
 		// calculates time per each move, based on current score
 		// time decreases exponentially as score grows
-		long time = (long)(1000*Math.pow(0.97, score/100));
+		long time = (long)(800*Math.pow(0.97, score/100));
 		print("New Task Scheduled with time "+time);
 		TimerTask Fall = new TimerTask() {
 			public void run() {
