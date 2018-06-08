@@ -34,6 +34,7 @@ public class Pieces
 		setGrid(type);
 	}
 
+	// sets the grid based on piece type
 	void setGrid(int type)
 	{
 		switch (type)
@@ -77,6 +78,7 @@ public class Pieces
 		}
 	}
 
+	// draws the piece
 	public void display(Graphics g, int s) // s = side length of square in grid
 	{
 		g.setColor(color);
@@ -104,13 +106,13 @@ public class Pieces
 				if (grid[j][i] == 1)
 					break;
 			}
-			if (j == -1) // piece is not in the i-th column
+			if (j == -1) // piece does not occupy the i-th column
 				continue;
 			else if (board[row+j+1][col+i] != 0) // the space below it is occupied, so it cannot move
 				canMove = false;
 		}
 		if (canMove)
-			row++;
+			row++; // shift down if it can move
 		else
 		{
 			for (int i = 0; i<4; i++)
@@ -137,13 +139,13 @@ public class Pieces
 				if (grid[i][j] == 1)
 					break;
 			}
-			if (j == 4) // piece is not in the i-th column
+			if (j == 4) // piece does not not in the i-th row
 				continue;
 			else if (board[row+i][col+j-1] != 0) // the space below it is occupied, so it cannot move
 				canMove = false;
 		}
 		if (canMove)
-			col--;
+			col--; // shift left if it can move
 	}
 
 	public void shiftRight()
@@ -151,20 +153,20 @@ public class Pieces
 		Boolean canMove = true;
 		for (int i = 0; i < 4; i++)
 		{
-			// find the square in the i-th row that is directly left of the piece
+			// find the square in the i-th row that is directly right of the piece
 			int j = 3;
 			for (; j >= 0; j--)
 			{
 				if (grid[i][j] == 1)
 					break;
 			}
-			if (j == -1) // piece is not in the i-th column
+			if (j == -1) // piece does not occupy the i-th row
 				continue;
 			else if (board[row+i][col+j+1] != 0) // the space below it is occupied, so it cannot move
 				canMove = false;
 		}
 		if (canMove)
-			col++;
+			col++; // shift right if it can move
 	}
 
 	public void fall()
@@ -189,7 +191,7 @@ public class Pieces
 	public void rotate(int dir)
 	{
 		int[][] newGrid = new int[4][4];
-		if (dir == 0)
+		if (dir == 0) // rotate left
 		{
 			for (int i = 0; i<4; i++)
 			{
@@ -200,7 +202,7 @@ public class Pieces
 				}
 			}
 		}
-		else
+		else // rotate right
 		{
 			for (int i = 0; i<4; i++)
 			{
@@ -211,6 +213,7 @@ public class Pieces
 				}
 			}
 		}
+		// check if new rotated position conflicts with existing pieces or border
 		for (int i = 0; i<4; i++)
 		{
 			for (int j = 0; j<4; j++)
@@ -220,6 +223,7 @@ public class Pieces
 
 			}
 		}
+		// if it is fine to rotate, then rotate
 		for (int i = 0; i<4; i++)
 		{
 			for (int j = 0; j<4; j++)

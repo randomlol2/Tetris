@@ -19,7 +19,7 @@ public class Tetris extends Panel implements KeyListener
 	int cols = 12; // number of columns in board
 	int s; // side length of square in board
 	Color[] colors = new Color[]{Color.BLACK, Color.BLUE, Color.WHITE, Color.RED, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.MAGENTA, Color.GRAY}; // colors for the board
-	Pieces activePiece;
+	Pieces activePiece; // the piece that the player controls
 	BufferedImage osi; // off screen image
 	Graphics osg; // off screen graphics
 	Boolean died = false;
@@ -66,6 +66,8 @@ public class Tetris extends Panel implements KeyListener
 				if(!activePiece.shiftDown())
 					newPiece();
 				repaint();
+				// cancel the current task, and schedule a new one with less time
+				// this mathe game speed up as you play
 				timer.cancel();
 				timer = new Timer();
 				scheduleTask();
@@ -77,6 +79,7 @@ public class Tetris extends Panel implements KeyListener
 
 	public void paint(Graphics g)
 	{
+		// uses buffered painting
 		dim = getSize();
 		osi = new BufferedImage(dim.width, dim.height, BufferedImage.TYPE_INT_RGB);
 		osg = osi.getGraphics();
@@ -85,15 +88,14 @@ public class Tetris extends Panel implements KeyListener
 
 	public void update(Graphics g)
 	{
+		// if there are any filled rows, delete them
 		deleteRows();
-		int width = dim.width;
-		int height = dim.height;
-		s = Math.min(height/rows, width/cols);
+		s = Math.min(dim.height/rows, dim.width/cols); // figure out the maximum side length of a square that will fit
 		for (int i = 0; i < rows; i++)
 		{
 			for (int j = 0; j < cols; j++)
 			{
-				osg.setColor(colors[board[i][j]]);
+				osg.setColor(colors[board[i][j]]); // color is determined by board[][]
 				if (i < 4)
 					osg.setColor(Color.GRAY); // don't show the first 4 rowss
 				osg.fillRect(j*s, i*s, s, s);
@@ -101,9 +103,10 @@ public class Tetris extends Panel implements KeyListener
 				osg.drawRect(j*s, i*s, s, s);
 			}
 		}
-		activePiece.display(osg, s);
+		activePiece.display(osg, s); // display the active piece
+
+		// write text
 		osg.setColor(Color.WHITE);
-		// osg.setFont(new Font("Arial", Font.PLAIN, 8));
 		if (died)
 		{
 			osg.drawString("Game Over! Youre score is " + score, 50, 50);
@@ -111,9 +114,11 @@ public class Tetris extends Panel implements KeyListener
 		}
 		else
 			osg.drawString("Score: " + score, 50, 50);
+
 		g.drawImage(osi, 0, 0, this);
 	}
 
+	// checks if the player has lost the game (if there's a piece in teh top four rows)
 	public void checkDeath()
 	{
 		for (int i = 0; i<4; i++)
@@ -132,20 +137,27 @@ public class Tetris extends Panel implements KeyListener
 		}
 	}
 
+	// creates a new piece and sets it to the acive piece
+	// piece type is chosen randomly
 	public void newPiece()
 	{
 		checkDeath();
 		if (died)
-			return;
+			return; // if the game has ended, don't create new pieces
 		int type = (int)(7*Math.random())+1; // random int between 1 and 7
 		activePiece = new Pieces(type, colors[type], board);
 	}
 
+	// deletes all full rows on the board
+	// calculates points based on number of rows cleared
+	// 100 points for clearing 1 row, 200 for 2 rows, 400 for 3 rows, 800 for 4 rows
 	public void deleteRows()
 	{
 		int count = 0; // number of lines deleted
 		for (int i = 0; i < rows - 1; i++)
 		{
+			// attempts to delete row i as many times as possible
+			// might be called multiple times for the same i, because rows shift down
 			while (deleteRow(i))
 				count++;
 		}
@@ -156,9 +168,11 @@ public class Tetris extends Panel implements KeyListener
 				increment *= 2;
 			score += increment;
 		}
-		// 100 points for clearing a row, 200 for 2 rows, 400 for 3 rows, 800 for 4 rows
 	}
 
+	// if the row is full, delete the row
+	// all rows above shift down one step
+	// returns whether the row was full or not
 	public Boolean deleteRow(int row)
 	{
 		Boolean full = true;
@@ -172,22 +186,24 @@ public class Tetris extends Panel implements KeyListener
 			for (int i = row; i > 0; i--)
 			{
 				for (int j = 1; j < cols-1; j++)
-					board[i][j] = board[i-1][j];
+					board[i][j] = board[i-1][j]; // move down one step
 			}
 			for (int j = 1; j < cols-1; j++)
-				board[0][j] = 0;
+				board[0][j] = 0; // top row becomes empty
 		}
 		return full;
 	}
 
+	// pauses or unpauses the game
 	void pause()
 	{
+		// when the game is paused, it unpauses the game and continues the TimerTask
 		if (paused)
 		{
 			paused = false;
 			scheduleTask();
 		}
-		else
+		else // when the game is unpaused, it pauses the game and stops the timer
 		{
 			paused = true;
 			timer.cancel();
@@ -203,27 +219,27 @@ public class Tetris extends Panel implements KeyListener
 			return;
 		switch (e.getKeyCode())
 		{
-			case KeyEvent.VK_LEFT: 	activePiece.move(0);
+			case KeyEvent.VK_LEFT: 	activePiece.move(0); // move left
 									break;
-			case KeyEvent.VK_RIGHT: activePiece.move(1);
+			case KeyEvent.VK_RIGHT: activePiece.move(1); // move right
 									break;
-			case KeyEvent.VK_DOWN: 	if(!activePiece.shiftDown())
-										newPiece();
+			case KeyEvent.VK_DOWN: 	if(!activePiece.shiftDown()) // move down
+										newPiece(); // if the new piece reaches the bottom, creates a new piece
 									break;
-			case KeyEvent.VK_SPACE: activePiece.move(2);
-									newPiece();
+			case KeyEvent.VK_SPACE: activePiece.move(2); // move all the way down
+									newPiece(); // creates a new piece because the current piece fell to the bottom
 									break;
-			case KeyEvent.VK_Z: 	activePiece.rotate(0); // rotate clockwise
+			case KeyEvent.VK_Z: 	activePiece.rotate(0); // rotate left
 									break;
-			case KeyEvent.VK_X: 	activePiece.rotate(1);
+			case KeyEvent.VK_X: 	activePiece.rotate(1); // rotate right
 									break;
-			case KeyEvent.VK_R:		timer.cancel();
+			case KeyEvent.VK_R:		timer.cancel(); // restarts the game
 									startGame();
 									break;
-			case KeyEvent.VK_P:		pause();
+			case KeyEvent.VK_P:		pause(); // pause or unpause the game
 									break;
 		}
-		repaint();
+		repaint(); // repaint to update any changes
 	}
 
 	public void keyTyped(KeyEvent e){}
